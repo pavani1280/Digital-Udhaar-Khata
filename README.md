@@ -1,27 +1,52 @@
-# Digital Udhaar Khata
+#  Digital Udhaar Khata
 
-A full-stack bookkeeping and credit ledger application for local retailers, shopkeepers, and customers.
+A full-stack bookkeeping and credit ledger application designed for local retailers, shopkeepers, and customers. It helps businesses digitally manage **Udhaar (Credit)** and **Jama (Payments)** with secure authentication, cloud-based records, and an intuitive dashboard.
 
-## Project Structure
+---
 
-- `backend/` - Node.js + Express API
-- `frontend/` - React + Vite SPA
+##  Features
 
-## Backend
+*  Digital Udhaar (Credit) & Jama (Payment) Ledger
+*  Customer Management
+*  JWT-based Authentication & Authorization
+*  Shopkeeper and Admin Dashboards
+*  Automatic Balance Calculation
+*  WhatsApp Payment Reminder Support
+*  PDF Ledger Statement Generation
+*  Multi-device Cloud Sync
+*  Profile & Settings Management
+*  Credit Limit Tracking
+*  Notifications System
 
-### Tech stack
+---
 
-- Node.js
-- Express
-- MongoDB / Mongoose
-- JWT authentication
-- bcryptjs
-- dotenv
-- CORS
-- express-rate-limit
-- Morgan
+##  Project Structure
 
-### Available scripts
+```text
+Digital-Udhaar-Khata/
+│
+├── backend/      # Node.js + Express REST API
+└── frontend/     # React + Vite Single Page Application
+```
+
+---
+
+#  Backend
+
+## Tech Stack
+
+* Node.js
+* Express.js
+* MongoDB
+* Mongoose
+* JWT Authentication
+* bcryptjs
+* dotenv
+* CORS
+* express-rate-limit
+* Morgan
+
+## Installation
 
 ```bash
 cd backend
@@ -29,15 +54,15 @@ npm install
 npm run dev
 ```
 
-Or to start without nodemon:
+To run without Nodemon:
 
 ```bash
 npm start
 ```
 
-### Environment variables
+## Environment Variables
 
-Create a `.env` file in `backend/` with values similar to:
+Create a `.env` file inside the `backend/` directory:
 
 ```env
 PORT=5000
@@ -46,34 +71,43 @@ JWT_SECRET=your_jwt_secret_here
 NODE_ENV=development
 ```
 
-### API routes
+## API Routes
 
-- `POST /api/auth/register` - register a new shopkeeper
-- `POST /api/auth/login` - login
-- `GET /api/auth/profile` - fetch current profile (authenticated)
-- `PUT /api/auth/profile` - update current profile (authenticated)
-- `GET /api/users` - admin user management
-- `GET /api/customers` - shopkeeper customer list
-- `POST /api/transactions` - create transaction
-- `GET /api/notifications` - fetch notifications
-- `GET /api/settings` - application settings
+| Method | Endpoint             | Description                         |
+| ------ | -------------------- | ----------------------------------- |
+| POST   | `/api/auth/register` | Register a new shopkeeper           |
+| POST   | `/api/auth/login`    | Login user                          |
+| GET    | `/api/auth/profile`  | Fetch authenticated user profile    |
+| PUT    | `/api/auth/profile`  | Update authenticated user profile   |
+| GET    | `/api/users`         | Admin user management               |
+| GET    | `/api/customers`     | Retrieve customer list              |
+| POST   | `/api/transactions`  | Create a credit/payment transaction |
+| GET    | `/api/notifications` | Fetch notifications                 |
+| GET    | `/api/settings`      | Retrieve application settings       |
 
-> The backend uses `backend/routes/*.js` and `backend/controllers/*.js` for routing and controller logic.
+The backend follows a modular architecture using:
 
-## Frontend
+* `backend/routes/`
+* `backend/controllers/`
+* `backend/models/`
+* `backend/middleware/`
 
-### Tech stack
+---
 
-- React 19
-- Vite
-- Redux Toolkit
-- React Router DOM
-- Axios
-- Tailwind CSS
-- Lucide React icons
-- Recharts
+# Frontend
 
-### Available scripts
+## Tech Stack
+
+* React 19
+* Vite
+* Redux Toolkit
+* React Router DOM
+* Axios
+* Tailwind CSS
+* Lucide React
+* Recharts
+
+## Installation
 
 ```bash
 cd frontend
@@ -81,50 +115,101 @@ npm install
 npm run dev
 ```
 
-Build for production:
+For production build:
 
 ```bash
 npm run build
 ```
 
-### Frontend configuration
+## Frontend Environment Variables
 
-The frontend expects the API base URL in `VITE_API_BASE_URL`. Configure it in a `.env` file inside `frontend/` if needed:
+Create a `.env` file inside the `frontend/` directory:
 
 ```env
 VITE_API_BASE_URL=http://localhost:5000
 ```
 
-If not configured, it defaults to `http://localhost:5000`.
+If not specified, the frontend defaults to:
 
-## Running the app
+```text
+http://localhost:5000
+```
 
-1. Start the backend:
-   - `cd backend`
-   - `npm install`
-   - `npm run dev`
+---
 
-2. Start the frontend:
-   - `cd frontend`
-   - `npm install`
-   - `npm run dev`
+# Running the Application
 
-3. Open the Vite app URL shown in the terminal (typically `http://localhost:5173`).
+### Start Backend
 
-## Notes
+```bash
+cd backend
+npm install
+npm run dev
+```
 
-- Authentication state is stored in `localStorage`.
-- The backend uses JWT tokens for protected routes.
-- The frontend includes dashboard routes for `shopkeeper` and `admin` roles.
-- Profile updates are sent to `/api/auth/profile` with authorization headers.
+### Start Frontend
 
-## Troubleshooting
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-- If the homepage fails to render, check `frontend/src/pages/Home.jsx` for component initialization issues.
-- If login or profile updates fail, verify that the backend is running and the JWT token is being attached by Axios in `frontend/src/utils/api.js`.
+Then open the Vite development server (typically):
 
-## Want to improve
+```text
+http://localhost:5173
+```
 
-- Add better error handling for auth failures
-- Add unit/integration tests
-- Add a root-level script to run both backend and frontend together
+---
+
+# Authentication
+
+* JWT-based authentication
+* Protected API routes
+* Authorization headers for secured endpoints
+* User session persistence using `localStorage`
+
+---
+
+# Notes
+
+* Authentication state is stored in `localStorage`.
+* Shopkeeper and Admin dashboards are role-based.
+* Profile updates are sent to `/api/auth/profile` with valid authorization headers.
+* Axios is configured to communicate with the backend API.
+
+---
+
+### Login or profile
+
+Verify:
+
+* Backend server is running.
+* MongoDB connection is active.
+* JWT token is correctly attached by Axios in:
+
+```text
+frontend/src/utils/api.js
+```
+
+* `VITE_API_BASE_URL` points to the correct backend URL.
+
+---
+
+# Future Improvements
+
+* Enhanced authentication error handling
+* Unit and integration testing
+* Root-level script to run backend and frontend simultaneously
+* SMS and Email notifications
+* Advanced analytics dashboard
+* Mobile application support
+* Multi-language support
+* Automated payment reminder scheduling
+
+---
+
+##  About
+
+**Digital Udhaar Khata** modernizes traditional paper-based credit books by providing a secure, scalable, and user-friendly platform for managing customer dues, payments, and business records efficiently.
