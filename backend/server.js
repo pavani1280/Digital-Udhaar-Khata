@@ -20,11 +20,28 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+//app.use(cors());
+const ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    process.env.CLIENT_URL,
+].filter(Boolean);
 
-if (process.env.NODE_ENV !== "production") {
-  app.use(morgan("dev"));
-}
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+
+        if (
+            ALLOWED_ORIGINS.includes(origin) ||
+            /\.vercel\.app$/.test(origin)
+        ) {
+            return callback(null, true);
+        }
+
+        return callback(new Error(`CORS: Origin ${origin} not allowed`));
+    },
+    credentials: true,
+}));
 
 // Rate Limiting
 const limiter = rateLimit({

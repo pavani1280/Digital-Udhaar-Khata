@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://digital-udhaar-khata-qr2e.onrender.com"
 });
 
 // Request interceptor to automatically attach authorization header
