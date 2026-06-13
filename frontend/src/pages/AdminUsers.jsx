@@ -13,7 +13,7 @@ const AdminUsers = () => {
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await API.get("/api/users", {
+      const response = await API.get("/users", {
         params: { search, status: statusFilter || undefined }
       });
       setUsers(response.data);
@@ -40,7 +40,7 @@ const AdminUsers = () => {
       )
     ) {
       try {
-        await API.put(`/api/users/${id}/status`, { status: nextStatus });
+        await API.put(`/users/${id}/status`, { status: nextStatus });
         // Update local state directly to prevent full list loading spinners
         setUsers(
           users.map((u) => {

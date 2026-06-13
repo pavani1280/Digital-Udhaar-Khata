@@ -7,7 +7,7 @@ export const fetchTransactions = createAsyncThunk(
   "transactions/fetchAll",
   async (filters, { rejectWithValue }) => {
     try {
-      const response = await API.get("/api/transactions", { params: filters });
+      const response = await API.get("/transactions", { params: filters });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch transactions");
@@ -19,7 +19,7 @@ export const addTransaction = createAsyncThunk(
   "transactions/add",
   async (transactionData, { dispatch, rejectWithValue }) => {
     try {
-      const response = await API.post("/api/transactions", transactionData);
+      const response = await API.post("/transactions", transactionData);
       // Re-fetch customer profile and stats to keep state in sync
       dispatch(fetchShopkeeperStats());
       if (transactionData.customerId) {
@@ -36,7 +36,7 @@ export const fetchShopkeeperStats = createAsyncThunk(
   "transactions/fetchStats",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await API.get("/api/transactions/stats");
+      const response = await API.get("/transactions/stats");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch stats");
@@ -48,7 +48,7 @@ export const fetchMonthlyReport = createAsyncThunk(
   "transactions/fetchReport",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await API.get("/api/transactions/report");
+      const response = await API.get("/transactions/report");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch report data");

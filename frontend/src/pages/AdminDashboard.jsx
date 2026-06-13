@@ -22,7 +22,7 @@ const AdminDashboard = () => {
   const fetchStats = async () => {
     try {
       setLoading(true);
-      const response = await API.get("/api/users/stats");
+      const response = await API.get("/users/stats");
       setStats(response.data);
       setError("");
     } catch (err) {

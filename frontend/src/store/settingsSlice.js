@@ -5,7 +5,7 @@ export const fetchSettings = createAsyncThunk(
   "settings/fetch",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await API.get("/api/settings");
+      const response = await API.get("/settings");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch settings");
@@ -17,7 +17,7 @@ export const updateSettings = createAsyncThunk(
   "settings/update",
   async (settingsData, { rejectWithValue }) => {
     try {
-      const response = await API.put("/api/settings", settingsData);
+      const response = await API.put("/settings", settingsData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to update settings");

@@ -5,7 +5,7 @@ export const fetchNotifications = createAsyncThunk(
   "notifications/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await API.get("/api/notifications");
+      const response = await API.get("/notifications");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch notifications");
@@ -17,7 +17,7 @@ export const markNotificationAsRead = createAsyncThunk(
   "notifications/markAsRead",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await API.put(`/api/notifications/${id}/read`);
+      const response = await API.put(`/notifications/${id}/read`);
       return response.data.notification;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to mark as read");
@@ -29,7 +29,7 @@ export const getReminderMessage = createAsyncThunk(
   "notifications/getReminderMessage",
   async (customerId, { dispatch, rejectWithValue }) => {
     try {
-      const response = await API.post("/api/notifications/send-reminder", { customerId });
+      const response = await API.post("/notifications/send-reminder", { customerId });
       // Re-fetch notifications to list the generated notification in-app
       dispatch(fetchNotifications());
       return response.data;

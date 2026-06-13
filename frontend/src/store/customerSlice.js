@@ -7,7 +7,7 @@ export const fetchCustomers = createAsyncThunk(
   async (params, { rejectWithValue }) => {
     try {
       const { search, sortBy } = params || {};
-      const response = await API.get("/api/customers", {
+      const response = await API.get("/customers", {
         params: { search, sortBy }
       });
       return response.data;
@@ -21,7 +21,7 @@ export const fetchCustomerById = createAsyncThunk(
   "customers/fetchById",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await API.get(`/api/customers/${id}`);
+      const response = await API.get(`/customers/${id}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch customer profile");
@@ -33,7 +33,7 @@ export const addCustomer = createAsyncThunk(
   "customers/add",
   async (customerData, { rejectWithValue }) => {
     try {
-      const response = await API.post("/api/customers", customerData);
+      const response = await API.post("/customers", customerData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to add customer");
@@ -45,7 +45,7 @@ export const updateCustomer = createAsyncThunk(
   "customers/update",
   async ({ id, customerData }, { rejectWithValue }) => {
     try {
-      const response = await API.put(`/api/customers/${id}`, customerData);
+      const response = await API.put(`/customers/${id}`, customerData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to update customer");
@@ -57,7 +57,7 @@ export const deleteCustomer = createAsyncThunk(
   "customers/delete",
   async (id, { rejectWithValue }) => {
     try {
-      await API.delete(`/api/customers/${id}`);
+      await API.delete(`/customers/${id}`);
       return id;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to delete customer");

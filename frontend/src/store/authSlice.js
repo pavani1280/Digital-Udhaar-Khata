@@ -10,7 +10,7 @@ export const registerUser = createAsyncThunk(
   "auth/register",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await API.post("/api/auth/register", userData);
+      const response = await API.post("/auth/register", userData);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data));
       return response.data;
@@ -24,7 +24,7 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await API.post("/api/auth/login", credentials);
+      const response = await API.post("/auth/login", credentials);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data));
       return response.data;
@@ -38,7 +38,7 @@ export const fetchProfile = createAsyncThunk(
   "auth/fetchProfile",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await API.get("/api/auth/profile");
+      const response = await API.get("/auth/profile");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch profile");
@@ -50,7 +50,7 @@ export const updateProfile = createAsyncThunk(
   "auth/updateProfile",
   async (profileData, { rejectWithValue }) => {
     try {
-      const response = await API.put("/api/auth/profile", profileData);
+      const response = await API.put("/auth/profile", profileData);
       localStorage.setItem("user", JSON.stringify(response.data));
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
