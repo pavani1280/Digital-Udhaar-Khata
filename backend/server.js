@@ -22,11 +22,11 @@ const app = express();
 app.use(express.json());
 //app.use(cors());
 const ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    process.env.CLIENT_URL,
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  process.env.CLIENT_URL,
+  "https://digital-udhaar-khata-omega.vercel.app"
 ].filter(Boolean);
-
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin) return callback(null, true);
