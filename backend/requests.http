@@ -1,0 +1,17 @@
+### Test Server
+GET http://localhost:5000/
+
+### Get User API
+GET http://localhost:5000/user-api
+
+### Register User
+POST http://localhost:5000/user-api
+Content-Type: application/json
+
+{
+    "name":"Divya",
+    "email":"divya@gmail.com",
+    "password":"123456",
+    "shopName":"Divya Store",
+    "phone":"9876543210"
+}
