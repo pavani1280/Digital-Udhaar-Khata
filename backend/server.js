@@ -25,7 +25,7 @@ const ALLOWED_ORIGINS = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   process.env.CLIENT_URL,
-  "https://digital-udhaar-khata-omega.vercel.app"
+  "https://digital-udhaar-khata-wheat.vercel.app/"
 ].filter(Boolean);
 app.use(cors({
     origin: (origin, callback) => {
