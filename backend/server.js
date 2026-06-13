@@ -68,9 +68,13 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/settings", settingsRoutes);
 
-// Root endpoint
+// Root endpoint / health check
 app.get("/", (req, res) => {
   res.send("Digital Udhaar Khata Backend API is running...");
+});
+
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", uptime: process.uptime() });
 });
 
 // 404 Route handler
@@ -111,6 +115,15 @@ const startServer = async () => {
 
     app.listen(PORT, () => {
       console.log(`Server running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
+
+      // Keep Render free instance warm with a self-ping every 14 minutes
+      if (process.env.NODE_ENV === "production" && process.env.RENDER_EXTERNAL_URL) {
+        setInterval(() => {
+          fetch(`${process.env.RENDER_EXTERNAL_URL}/api/health`)
+            .then(() => console.log("Keep-alive ping sent"))
+            .catch((err) => console.error("Keep-alive ping failed:", err.message));
+        }, 14 * 60 * 1000);
+      }
     });
   } catch (error) {
     console.error("Database connection failed:", error);
