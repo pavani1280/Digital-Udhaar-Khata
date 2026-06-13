@@ -8,8 +8,8 @@ const router = express.Router();
 router.use(protect);
 router.use(authorize("admin"));
 
+router.get("/stats", getPlatformStats);
 router.get("/", getAllUsers);
 router.put("/:id/status", toggleUserStatus);
-router.get("/stats", getPlatformStats);
 
 export default router;

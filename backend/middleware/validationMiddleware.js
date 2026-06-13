@@ -27,7 +27,10 @@ export const validateCustomer = (req, res, next) => {
 };
 
 export const validateTransaction = (req, res, next) => {
-  const { type, amount } = req.body;
+  const { customerId, type, amount } = req.body;
+  if (!customerId) {
+    return res.status(400).json({ message: "Customer is required" });
+  }
   if (!type || !amount) {
     return res.status(400).json({ message: "Type and amount are required" });
   }

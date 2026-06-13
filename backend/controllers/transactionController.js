@@ -1,5 +1,6 @@
 import Transaction from "../models/Transaction.js";
 import Customer from "../models/Customer.js";
+import mongoose from "mongoose";
 
 // Add a transaction (Credit or Payment)
 export const createTransaction = async (req, res, next) => {
@@ -41,7 +42,7 @@ export const createTransaction = async (req, res, next) => {
 export const getTransactions = async (req, res, next) => {
   try {
     const shopkeeperId = req.user._id;
-    const { customerId, type, startDate, endDate } = req.query;
+    const { customerId, type, startDate, endDate, limit } = req.query;
 
     let query = { shopkeeperId };
 
@@ -67,7 +68,8 @@ export const getTransactions = async (req, res, next) => {
 
     const transactions = await Transaction.find(query)
       .populate("customerId", "name phone")
-      .sort({ date: -1, createdAt: -1 });
+      .sort({ date: -1, createdAt: -1 })
+      .limit(limit ? parseInt(limit) : 0);
 
     res.json(transactions);
   } catch (error) {
@@ -82,7 +84,7 @@ export const getShopkeeperStats = async (req, res, next) => {
 
     // Aggregate statistics
     const stats = await Transaction.aggregate([
-      { $match: { shopkeeperId } },
+      { $match: { shopkeeperId: new mongoose.Types.ObjectId(shopkeeperId) } },
       {
         $group: {
           _id: "$type",
@@ -120,7 +122,7 @@ export const getMonthlyReport = async (req, res, next) => {
 
     // Run aggregation to group by year/month/day
     const reports = await Transaction.aggregate([
-      { $match: { shopkeeperId } },
+      { $match: { shopkeeperId: new mongoose.Types.ObjectId(shopkeeperId) } },
       {
         $group: {
           _id: {

@@ -12,8 +12,8 @@ const Navbar = ({ toggleSidebar }) => {
   const { notifications } = useSelector((state) => state.notifications);
 
   const [darkMode, setDarkMode] = useState(
-    localStorage.getItem("theme") === "dark" &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches
+    localStorage.getItem("theme") === "dark" ||
+    (localStorage.getItem("theme") === null && window.matchMedia("(prefers-color-scheme: dark)").matches)
   );
 
   const [showNotifications, setShowNotifications] = useState(false);
