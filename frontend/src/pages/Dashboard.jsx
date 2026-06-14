@@ -24,6 +24,7 @@ import { Link } from "react-router-dom";
 import CustomerModal from "../components/CustomerModal.jsx";
 import TransactionModal from "../components/TransactionModal.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
+// eslint-disable-next-line no-unused-vars
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -109,9 +110,18 @@ const Dashboard = () => {
     }
   ];
 
-  if (transLoading && stats.totalCustomers === 0) {
-    return <LoadingSpinner fullPage />;
-  }
+  // Skeleton pulse component for loading state
+  const KpiSkeleton = () => (
+    <div className="rounded-3xl border border-slate-200/60 bg-white p-6 shadow-md dark:border-slate-800 dark:bg-slate-950 animate-pulse">
+      <div className="flex items-center justify-between">
+        <div className="space-y-2 flex-1">
+          <div className="h-3 w-24 bg-slate-200 dark:bg-slate-800 rounded-full" />
+          <div className="h-7 w-20 bg-slate-200 dark:bg-slate-800 rounded-full" />
+        </div>
+        <div className="h-12 w-12 rounded-2xl bg-slate-200 dark:bg-slate-800" />
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-8 p-4 sm:p-6 lg:p-8">
@@ -143,38 +153,41 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
+      {/* KPI Cards Grid — show skeletons while loading */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {kpis.map((kpi) => {
-          const Icon = kpi.icon;
-          const bgColors = {
-            indigo: "bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400",
-            rose: "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400",
-            emerald: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400",
-            amber: "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400"
-          };
-
-          return (
-            <div
-              key={kpi.label}
-              className="rounded-3xl border border-slate-200/60 bg-white p-6 shadow-md dark:border-slate-800 dark:bg-slate-950"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                    {kpi.label}
-                  </p>
-                  <h3 className="mt-2 text-2xl font-black text-slate-800 dark:text-slate-100">
-                    {kpi.value}
-                  </h3>
-                </div>
-                <div className={`rounded-2xl p-3 ${bgColors[kpi.color]}`}>
-                  <Icon className="h-6 w-6" />
+        {transLoading && stats.totalCustomers === 0 ? (
+          [0, 1, 2, 3].map((i) => <KpiSkeleton key={i} />)
+        ) : (
+          kpis.map((kpi) => {
+            const Icon = kpi.icon;
+            const bgColors = {
+              indigo: "bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400",
+              rose: "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400",
+              emerald: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400",
+              amber: "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400"
+            };
+            return (
+              <div
+                key={kpi.label}
+                className="rounded-3xl border border-slate-200/60 bg-white p-6 shadow-md dark:border-slate-800 dark:bg-slate-950"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                      {kpi.label}
+                    </p>
+                    <h3 className="mt-2 text-2xl font-black text-slate-800 dark:text-slate-100">
+                      {kpi.value}
+                    </h3>
+                  </div>
+                  <div className={`rounded-2xl p-3 ${bgColors[kpi.color]}`}>
+                    <Icon className="h-6 w-6" />
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
 
       {/* Analytics Chart section */}
@@ -314,7 +327,19 @@ const Dashboard = () => {
         </div>
 
         <div className="mt-4 overflow-x-auto">
-          {transactions.length === 0 ? (
+          {transLoading && transactions.length === 0 ? (
+            <div className="animate-pulse space-y-3 py-2">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex items-center justify-between gap-4">
+                  <div className="h-4 flex-1 rounded-full bg-slate-200 dark:bg-slate-800" />
+                  <div className="h-4 w-24 rounded-full bg-slate-200 dark:bg-slate-800" />
+                  <div className="h-4 w-16 rounded-full bg-slate-200 dark:bg-slate-800" />
+                  <div className="h-5 w-16 rounded-full bg-slate-200 dark:bg-slate-800" />
+                  <div className="h-4 w-14 rounded-full bg-slate-200 dark:bg-slate-800 ml-auto" />
+                </div>
+              ))}
+            </div>
+          ) : transactions.length === 0 ? (
             <div className="py-12 text-center text-sm text-slate-400">
               No transactions registered yet. Record credit or payment.
             </div>

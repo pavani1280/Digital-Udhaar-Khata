@@ -18,6 +18,12 @@ const Login = () => {
   const [formError, setFormError] = useState("");
   const redirectedError = location.state?.error || "";
 
+  // Wake up Render backend as soon as Login page loads (prevents cold start delay on submit)
+  useEffect(() => {
+    const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+    fetch(`${apiBase}/api/health`).catch(() => {}); // fire and forget
+  }, []);
+
   useEffect(() => {
     dispatch(clearError());
   }, [dispatch]);
