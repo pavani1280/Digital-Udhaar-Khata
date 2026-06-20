@@ -39,6 +39,20 @@ export const getReminderMessage = createAsyncThunk(
   }
 );
 
+export const getAIReminderMessage = createAsyncThunk(
+  "notifications/getAIReminderMessage",
+  async ({ customerId, tone }, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await API.post("/notifications/ai-reminder", { customerId, tone });
+      // Re-fetch notifications to list the generated notification in-app
+      dispatch(fetchNotifications());
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to generate AI reminder message");
+    }
+  }
+);
+
 const notificationSlice = createSlice({
   name: "notifications",
   initialState: {
@@ -87,6 +101,19 @@ const notificationSlice = createSlice({
         state.reminderPayload = action.payload;
       })
       .addCase(getReminderMessage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Get AI Reminder Message
+      .addCase(getAIReminderMessage.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAIReminderMessage.fulfilled, (state, action) => {
+        state.loading = false;
+        state.reminderPayload = action.payload;
+      })
+      .addCase(getAIReminderMessage.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

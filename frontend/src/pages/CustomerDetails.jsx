@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCustomerById } from "../store/customerSlice.js";
 import { fetchTransactions } from "../store/transactionSlice.js";
-import { getReminderMessage, clearReminderPayload } from "../store/notificationSlice.js";
+import { getReminderMessage, clearReminderPayload, getAIReminderMessage } from "../store/notificationSlice.js";
 import { fetchSettings } from "../store/settingsSlice.js";
 import {
   ArrowLeft,
@@ -15,7 +15,8 @@ import {
   Check,
   ExternalLink,
   X,
-  CalendarDays
+  CalendarDays,
+  Sparkles
 } from "lucide-react";
 import TransactionModal from "../components/TransactionModal.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
@@ -35,6 +36,8 @@ const CustomerDetails = () => {
 
   const [isReminderViewerOpen, setIsReminderViewerOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [selectedTone, setSelectedTone] = useState("friendly");
 
   useEffect(() => {
     dispatch(fetchCustomerById(id));
@@ -60,6 +63,18 @@ const CustomerDetails = () => {
     const result = await dispatch(getReminderMessage(id));
     if (result.meta.requestStatus === "fulfilled") {
       setIsReminderViewerOpen(true);
+    }
+  };
+
+  const handleGenerateAIReminder = async () => {
+    try {
+      setAiLoading(true);
+      await dispatch(getAIReminderMessage({ customerId: id, tone: selectedTone })).unwrap();
+    } catch (err) {
+      console.error(err);
+      alert(err || "Failed to generate AI reminder");
+    } finally {
+      setAiLoading(false);
     }
   };
 
@@ -356,6 +371,45 @@ const CustomerDetails = () => {
                 <p className="text-sm text-slate-600 dark:text-slate-300 italic mt-1 bg-white dark:bg-slate-950 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
                   "{reminderPayload.formattedMessage}"
                 </p>
+
+                {/* AI Remaster Section */}
+                <div className="border-t border-slate-200 dark:border-slate-800 pt-3 mt-4">
+                  <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Personalize with Gemini AI
+                  </span>
+                  <div className="flex items-center gap-2 mt-2">
+                    {["friendly", "professional", "urgent"].map((tone) => (
+                      <button
+                        key={tone}
+                        type="button"
+                        onClick={() => setSelectedTone(tone)}
+                        className={`text-xs px-2.5 py-1.5 rounded-lg border font-semibold capitalize transition cursor-pointer ${
+                          selectedTone === tone
+                            ? "bg-indigo-50 border-indigo-200 text-indigo-600 dark:bg-indigo-950/45 dark:border-indigo-900/60 dark:text-indigo-400"
+                            : "border-slate-200 text-slate-500 dark:border-slate-800 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/40"
+                        }`}
+                      >
+                        {tone}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleGenerateAIReminder}
+                    disabled={aiLoading}
+                    className="w-full mt-3 flex items-center justify-center space-x-1.5 rounded-xl bg-linear-to-r from-indigo-600 to-violet-600 py-2.5 text-xs font-bold text-white shadow-sm hover:from-indigo-500 hover:to-violet-500 transition disabled:opacity-50 cursor-pointer"
+                  >
+                    {aiLoading ? (
+                      <span>Generating AI Reminder...</span>
+                    ) : (
+                      <>
+                        <Sparkles className="h-3.5 w-3.5" />
+                        <span>Rewrite with AI</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
 
               {/* Actions */}
