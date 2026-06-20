@@ -95,7 +95,7 @@ const History = () => {
 
     const reportWindow = window.open("", "_blank", "width=1000,height=720");
     if (!reportWindow) {
-      alert("Please allow pop-ups to print or save the records PDF.");
+      alert("Please allow pop-ups to save the records PDF.");
       return;
     }
 
@@ -120,7 +120,6 @@ const History = () => {
           </style>
         </head>
         <body>
-          <button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:8px;background:#4f46e5;color:white;font-weight:700;">Print / Save PDF</button>
           <h1>${reportTitle()}</h1>
           <p class="muted">Generated ${formatDisplayDate(new Date())}</p>
           <div class="summary">
@@ -156,7 +155,7 @@ const History = () => {
           className="inline-flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 hover:bg-indigo-500"
         >
           <Printer className="h-4 w-4" />
-          <span>Print / Save PDF</span>
+          <span>Download PDF</span>
         </button>
       </div>
 

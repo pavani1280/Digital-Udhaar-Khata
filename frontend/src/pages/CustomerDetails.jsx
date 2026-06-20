@@ -140,7 +140,7 @@ const CustomerDetails = () => {
 
     const reportWindow = window.open("", "_blank", "width=900,height=700");
     if (!reportWindow) {
-      alert("Please allow pop-ups to print or save the report PDF.");
+      alert("Please allow pop-ups to save the report PDF.");
       return;
     }
 
@@ -161,11 +161,11 @@ const CustomerDetails = () => {
             th, td { border-bottom: 1px solid #e2e8f0; padding: 10px; text-align: left; }
             th { background: #f8fafc; text-transform: uppercase; font-size: 10px; letter-spacing: .06em; color: #475569; }
             .amount { text-align: right; font-weight: 700; }
+            .hidden-button { display: none; }
             @media print { button { display: none; } body { margin: 20px; } }
           </style>
         </head>
         <body>
-          <button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:8px;background:#4f46e5;color:white;font-weight:700;">Print / Save PDF</button>
           <h1>${buildReportTitle()}</h1>
           <p class="muted">${currentCustomer.name} · ${currentCustomer.phone} · Generated ${formatDisplayDate(new Date())}</p>
           <div class="summary">
@@ -364,7 +364,7 @@ const CustomerDetails = () => {
                 className="inline-flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 hover:bg-indigo-500 disabled:bg-indigo-400"
               >
                 <Printer className="h-4 w-4" />
-                <span>{reportLoading ? "Preparing..." : "Print / Save PDF"}</span>
+                <span>{reportLoading ? "Preparing..." : "Download PDF"}</span>
               </button>
             </div>
 
