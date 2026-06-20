@@ -19,7 +19,8 @@ import {
   TrendingDown,
   Scale,
   Eye,
-  EyeOff
+  EyeOff,
+  Settings as SettingsIcon
 } from "lucide-react";
 
 const getProfileFormData = (user) => ({
@@ -41,6 +42,8 @@ const Profile = () => {
   const [formError, setFormError] = useState("");
   const [success, setSuccess] = useState(false);
   const [showOutstandingDetails, setShowOutstandingDetails] = useState(false);
+  const [showProfileDetails, setShowProfileDetails] = useState(true);
+  const [showApplicationSettings, setShowApplicationSettings] = useState(false);
 
   useEffect(() => {
     dispatch(fetchProfile());
@@ -141,10 +144,10 @@ const Profile = () => {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100">
-            Profile Settings
+            Profile
           </h1>
           <p className="text-sm text-slate-500">
-            Manage shop details, contact information, and account password
+            Manage your account, outstanding balances, password, and application settings
           </p>
         </div>
         <div className="inline-flex items-center gap-2 self-start rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 dark:border-emerald-950/40 dark:bg-emerald-950/20 dark:text-emerald-400">
@@ -152,6 +155,51 @@ const Profile = () => {
           <span>{user?.status || "active"} account</span>
         </div>
       </div>
+
+      <section className="rounded-3xl border border-slate-200/60 bg-white p-6 shadow-md dark:border-slate-800 dark:bg-slate-950 sm:p-8">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:text-left">
+            <div className="flex h-28 w-28 shrink-0 items-center justify-center rounded-3xl bg-indigo-100 text-4xl font-black text-indigo-700 shadow-sm dark:bg-indigo-950 dark:text-indigo-300">
+              {initials}
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-3xl font-black tracking-tight text-slate-800 dark:text-slate-100">
+                {user?.name || "Shopkeeper"}
+              </h2>
+              <p className="mt-1 text-base font-semibold text-slate-500">{user?.shopName || "Your shop"}</p>
+              <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+                <div className="flex items-center justify-center gap-2 rounded-2xl bg-slate-50 px-3 py-2 text-slate-600 dark:bg-slate-900 dark:text-slate-300 sm:justify-start">
+                  <Mail className="h-4 w-4 text-slate-400" />
+                  <span className="truncate">{user?.email || "Not available"}</span>
+                </div>
+                <div className="flex items-center justify-center gap-2 rounded-2xl bg-slate-50 px-3 py-2 text-slate-600 dark:bg-slate-900 dark:text-slate-300 sm:justify-start">
+                  <ShieldCheck className="h-4 w-4 text-slate-400" />
+                  <span className="capitalize">{user?.role || "shopkeeper"} account</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:w-80">
+            <button
+              type="button"
+              onClick={() => setShowProfileDetails((value) => !value)}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition hover:bg-indigo-500"
+            >
+              {showProfileDetails ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              <span>{showProfileDetails ? "Hide Details" : "See Details"}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowApplicationSettings((value) => !value)}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              <SettingsIcon className="h-4 w-4" />
+              <span>Application Settings</span>
+            </button>
+          </div>
+        </div>
+      </section>
 
       <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="rounded-3xl border border-rose-100 bg-white p-5 shadow-md dark:border-rose-950/30 dark:bg-slate-950">
@@ -238,38 +286,7 @@ const Profile = () => {
         </section>
       )}
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
-        <aside className="space-y-4">
-          <div className="rounded-3xl border border-slate-200/60 bg-white p-6 shadow-md dark:border-slate-800 dark:bg-slate-950">
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-indigo-100 text-2xl font-black text-indigo-750 dark:bg-indigo-950 dark:text-indigo-300">
-                {initials}
-              </div>
-              <h2 className="mt-4 text-lg font-extrabold text-slate-800 dark:text-slate-100">
-                {user?.name || "Shopkeeper"}
-              </h2>
-              <p className="text-sm font-medium text-slate-500">{user?.shopName || "Your shop"}</p>
-            </div>
-
-            <div className="mt-6 space-y-3 border-t border-slate-100 pt-5 text-sm dark:border-slate-900">
-              <div className="flex items-start gap-3">
-                <Mail className="mt-0.5 h-4 w-4 text-slate-400" />
-                <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Email</p>
-                  <p className="truncate font-semibold text-slate-700 dark:text-slate-300">{user?.email || "Not available"}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <ShieldCheck className="mt-0.5 h-4 w-4 text-slate-400" />
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Role</p>
-                  <p className="font-semibold capitalize text-slate-700 dark:text-slate-300">{user?.role || "shopkeeper"}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </aside>
-
+      {showProfileDetails && (
         <div className="rounded-3xl border border-slate-200/60 bg-white p-6 shadow-md dark:border-slate-800 dark:bg-slate-950">
           <form onSubmit={handleSubmit} className="space-y-6">
             {success && (
@@ -288,7 +305,7 @@ const Profile = () => {
             <section className="space-y-4">
               <div>
                 <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Shopkeeper Details</h3>
-                <p className="text-xs text-slate-400">This information appears in reminder messages and account records.</p>
+                <p className="text-xs text-slate-400">Update your name, shop details, contact information, and password.</p>
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -412,8 +429,9 @@ const Profile = () => {
             </div>
           </form>
         </div>
-      </div>
+      )}
 
+      {showApplicationSettings && (
       <section className="space-y-3">
         <div>
           <h2 className="text-lg font-extrabold tracking-tight text-slate-800 dark:text-slate-100">
@@ -425,6 +443,7 @@ const Profile = () => {
         </div>
         <ApplicationSettingsForm embedded />
       </section>
+      )}
     </div>
   );
 };
