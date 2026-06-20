@@ -6,6 +6,7 @@ import { fetchTransactions } from "../store/transactionSlice.js";
 import { getReminderMessage, clearReminderPayload, getAIReminderMessage } from "../store/notificationSlice.js";
 import { fetchSettings } from "../store/settingsSlice.js";
 import API from "../utils/api.js";
+import html2pdf from "html2pdf.js";
 import {
   ArrowLeft,
   Phone,
@@ -138,13 +139,7 @@ const CustomerDetails = () => {
       `)
       .join("");
 
-    const reportWindow = window.open("", "_blank", "width=900,height=700");
-    if (!reportWindow) {
-      alert("Please allow pop-ups to save the report PDF.");
-      return;
-    }
-
-    reportWindow.document.write(`
+    const htmlContent = `
       <!doctype html>
       <html>
         <head>
@@ -161,8 +156,6 @@ const CustomerDetails = () => {
             th, td { border-bottom: 1px solid #e2e8f0; padding: 10px; text-align: left; }
             th { background: #f8fafc; text-transform: uppercase; font-size: 10px; letter-spacing: .06em; color: #475569; }
             .amount { text-align: right; font-weight: 700; }
-            .hidden-button { display: none; }
-            @media print { button { display: none; } body { margin: 20px; } }
           </style>
         </head>
         <body>
@@ -181,9 +174,23 @@ const CustomerDetails = () => {
           </table>
         </body>
       </html>
-    `);
-    reportWindow.document.close();
-    reportWindow.focus();
+    `;
+
+    const element = document.createElement("div");
+    element.innerHTML = htmlContent;
+    const filename = `${currentCustomer.name}-report-${new Date().getTime()}.pdf`;
+    
+    const options = {
+      margin: 10,
+      filename: filename,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { orientation: "portrait", unit: "mm", format: "a4" }
+    };
+    
+    html2pdf().set(options).from(element).save().catch(() => {
+      alert("Failed to download PDF. Please try again.");
+    });
   };
 
   const handleGenerateReport = async () => {

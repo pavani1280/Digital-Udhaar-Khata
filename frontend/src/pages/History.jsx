@@ -4,6 +4,7 @@ import { fetchSettings } from "../store/settingsSlice.js";
 import API from "../utils/api.js";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
 import { CalendarDays, FileText, Printer, Search, WalletCards } from "lucide-react";
+import html2pdf from "html2pdf.js";
 
 const formatDisplayDate = (value) =>
   new Date(value).toLocaleDateString("en-IN", {
@@ -93,13 +94,7 @@ const History = () => {
       `)
       .join("");
 
-    const reportWindow = window.open("", "_blank", "width=1000,height=720");
-    if (!reportWindow) {
-      alert("Please allow pop-ups to save the records PDF.");
-      return;
-    }
-
-    reportWindow.document.write(`
+    const htmlContent = `
       <!doctype html>
       <html>
         <head>
@@ -116,7 +111,6 @@ const History = () => {
             th, td { border-bottom: 1px solid #e2e8f0; padding: 10px; text-align: left; }
             th { background: #f8fafc; text-transform: uppercase; font-size: 10px; letter-spacing: .06em; color: #475569; }
             .amount { text-align: right; font-weight: 700; }
-            @media print { button { display: none; } body { margin: 20px; } }
           </style>
         </head>
         <body>
@@ -135,9 +129,23 @@ const History = () => {
           </table>
         </body>
       </html>
-    `);
-    reportWindow.document.close();
-    reportWindow.focus();
+    `;
+
+    const element = document.createElement("div");
+    element.innerHTML = htmlContent;
+    const filename = `transaction-records-${new Date().getTime()}.pdf`;
+    
+    const options = {
+      margin: 10,
+      filename: filename,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { orientation: "portrait", unit: "mm", format: "a4" }
+    };
+    
+    html2pdf().set(options).from(element).save().catch(() => {
+      alert("Failed to download PDF. Please try again.");
+    });
   };
 
   return (
