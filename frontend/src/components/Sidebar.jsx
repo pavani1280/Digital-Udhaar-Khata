@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   Users,
   User,
-  Settings as SettingsIcon,
   LogOut,
   ShieldCheck,
   UserCheck,
@@ -37,8 +36,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }) => {
   const shopkeeperLinks = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
     { to: "/customers", label: "Customers", icon: Users },
-    { to: "/profile", label: "Profile Settings", icon: User },
-    { to: "/settings", label: "Application Settings", icon: SettingsIcon }
+    { to: "/profile", label: "Profile Settings", icon: User }
   ];
 
   const adminLinks = [

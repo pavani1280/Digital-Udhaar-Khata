@@ -10,7 +10,8 @@ import {
   MapPin,
   Trash2,
   Edit2,
-  CircleAlert
+  CircleAlert,
+  CalendarClock
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import CustomerModal from "../components/CustomerModal.jsx";
@@ -59,6 +60,34 @@ const Customers = () => {
     e.stopPropagation();
     setSelectedCustomerId(customerId);
     setIsTransModalOpen(true);
+  };
+
+  const getReminderStatus = (reminderDate) => {
+    if (!reminderDate) return null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const reminder = new Date(reminderDate);
+    reminder.setHours(0, 0, 0, 0);
+    const dayDiff = Math.round((reminder - today) / 86400000);
+
+    if (dayDiff < 0) {
+      return {
+        label: `Overdue ${Math.abs(dayDiff)}d`,
+        className: "bg-rose-50 text-rose-600 dark:bg-rose-950/20 dark:text-rose-400"
+      };
+    }
+
+    if (dayDiff === 0) {
+      return {
+        label: "Reminder today",
+        className: "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400"
+      };
+    }
+
+    return {
+      label: `Reminder in ${dayDiff}d`,
+      className: "bg-indigo-50 text-indigo-600 dark:bg-indigo-950/20 dark:text-indigo-400"
+    };
   };
 
   const currencySymbol = settings.currency === "INR" ? "₹" : settings.currency === "USD" ? "$" : settings.currency;
@@ -141,6 +170,7 @@ const Customers = () => {
           {customers.map((cust) => {
             const owesMoney = cust.balance > 0;
             const hasSurplus = cust.balance < 0;
+            const reminderStatus = getReminderStatus(cust.reminderDate);
 
             return (
               <div
@@ -164,6 +194,12 @@ const Customers = () => {
                           <MapPin className="h-3.5 w-3.5" />
                           <span>{cust.address}</span>
                         </p>
+                        {reminderStatus && (
+                          <p className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[10px] font-bold ${reminderStatus.className}`}>
+                            <CalendarClock className="h-3 w-3" />
+                            <span>{reminderStatus.label}</span>
+                          </p>
+                        )}
                       </div>
                     </div>
 

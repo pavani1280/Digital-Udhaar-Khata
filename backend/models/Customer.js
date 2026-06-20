@@ -25,6 +25,10 @@ const customerSchema = new Schema(
     balance: {
       type: Number,
       default: 0
+    },
+    reminderDate: {
+      type: Date,
+      default: null
     }
   },
   {

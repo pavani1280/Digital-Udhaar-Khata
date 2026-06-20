@@ -4,7 +4,7 @@ import { fetchSettings, updateSettings, clearSettingsError } from "../store/sett
 import { Coins, CalendarDays, MessageSquareCode, CheckCircle, Info } from "lucide-react";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
 
-const Settings = () => {
+export const ApplicationSettingsForm = ({ embedded = false }) => {
   const dispatch = useDispatch();
   const { settings, loading, error } = useSelector((state) => state.settings);
 
@@ -53,16 +53,18 @@ const Settings = () => {
     return <LoadingSpinner />;
   }
 
-  return (
-    <div className="max-w-2xl mx-auto space-y-6 p-4 sm:p-6 lg:p-8">
-      <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100">
-          Application Settings
-        </h1>
-        <p className="text-sm text-slate-500">
-          Configure ledger parameters, currency settings, and custom SMS/WhatsApp notifications
-        </p>
-      </div>
+  const content = (
+    <>
+      {!embedded && (
+        <div>
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100">
+            Application Settings
+          </h1>
+          <p className="text-sm text-slate-500">
+            Configure ledger parameters, currency settings, and custom SMS/WhatsApp notifications
+          </p>
+        </div>
+      )}
 
       <div className="rounded-3xl border border-slate-200/60 bg-white p-6 shadow-md dark:border-slate-800 dark:bg-slate-950">
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -167,8 +169,20 @@ const Settings = () => {
           </div>
         </form>
       </div>
+    </>
+  );
+
+  if (embedded) {
+    return content;
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto space-y-6 p-4 sm:p-6 lg:p-8">
+      {content}
     </div>
   );
 };
+
+const Settings = () => <ApplicationSettingsForm />;
 
 export default Settings;

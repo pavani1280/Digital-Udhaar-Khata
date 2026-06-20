@@ -5,6 +5,7 @@ import { fetchCustomerById } from "../store/customerSlice.js";
 import { fetchTransactions } from "../store/transactionSlice.js";
 import { getReminderMessage, clearReminderPayload, getAIReminderMessage } from "../store/notificationSlice.js";
 import { fetchSettings } from "../store/settingsSlice.js";
+import API from "../utils/api.js";
 import {
   ArrowLeft,
   Phone,
@@ -16,7 +17,10 @@ import {
   ExternalLink,
   X,
   CalendarDays,
-  Sparkles
+  Sparkles,
+  FileText,
+  Printer,
+  CalendarClock
 } from "lucide-react";
 import TransactionModal from "../components/TransactionModal.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
@@ -33,6 +37,11 @@ const CustomerDetails = () => {
   const [filterType, setFilterType] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [reportMode, setReportMode] = useState("all");
+  const [reportDate, setReportDate] = useState("");
+  const [reportStartDate, setReportStartDate] = useState("");
+  const [reportEndDate, setReportEndDate] = useState("");
+  const [reportLoading, setReportLoading] = useState(false);
 
   const [isReminderViewerOpen, setIsReminderViewerOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -91,6 +100,123 @@ const CustomerDetails = () => {
     dispatch(clearReminderPayload());
   };
 
+  const formatDisplayDate = (value) =>
+    new Date(value).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    });
+
+  const buildReportTitle = () => {
+    if (reportMode === "single") {
+      return `Single Day Report - ${reportDate ? formatDisplayDate(reportDate) : "Selected Date"}`;
+    }
+    if (reportMode === "range") {
+      return `Date Range Report - ${reportStartDate ? formatDisplayDate(reportStartDate) : "Start"} to ${reportEndDate ? formatDisplayDate(reportEndDate) : "End"}`;
+    }
+    return "Complete Transaction Report";
+  };
+
+  const openPrintableReport = (reportTransactions) => {
+    const totalCredit = reportTransactions
+      .filter((item) => item.type === "credit")
+      .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    const totalPayment = reportTransactions
+      .filter((item) => item.type === "payment")
+      .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    const netBalance = totalCredit - totalPayment;
+
+    const rows = reportTransactions
+      .map((item) => `
+        <tr>
+          <td>${formatDisplayDate(item.date)}</td>
+          <td>${item.customerId?.name || currentCustomer.name}</td>
+          <td>${item.description || "No description"}</td>
+          <td>${item.type === "credit" ? "Credit" : "Payment"}</td>
+          <td class="amount">${currencySymbol}${Number(item.amount || 0).toLocaleString("en-IN")}</td>
+        </tr>
+      `)
+      .join("");
+
+    const reportWindow = window.open("", "_blank", "width=900,height=700");
+    if (!reportWindow) {
+      alert("Please allow pop-ups to print or save the report PDF.");
+      return;
+    }
+
+    reportWindow.document.write(`
+      <!doctype html>
+      <html>
+        <head>
+          <title>${buildReportTitle()}</title>
+          <style>
+            body { font-family: Arial, sans-serif; color: #0f172a; margin: 32px; }
+            h1 { margin: 0; font-size: 24px; }
+            .muted { color: #64748b; font-size: 12px; }
+            .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 24px 0; }
+            .box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; }
+            .label { color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 700; }
+            .value { font-size: 18px; font-weight: 800; margin-top: 4px; }
+            table { border-collapse: collapse; width: 100%; font-size: 12px; }
+            th, td { border-bottom: 1px solid #e2e8f0; padding: 10px; text-align: left; }
+            th { background: #f8fafc; text-transform: uppercase; font-size: 10px; letter-spacing: .06em; color: #475569; }
+            .amount { text-align: right; font-weight: 700; }
+            @media print { button { display: none; } body { margin: 20px; } }
+          </style>
+        </head>
+        <body>
+          <button onclick="window.print()" style="float:right;padding:10px 14px;border:0;border-radius:8px;background:#4f46e5;color:white;font-weight:700;">Print / Save PDF</button>
+          <h1>${buildReportTitle()}</h1>
+          <p class="muted">${currentCustomer.name} · ${currentCustomer.phone} · Generated ${formatDisplayDate(new Date())}</p>
+          <div class="summary">
+            <div class="box"><div class="label">Credit Given</div><div class="value">${currencySymbol}${totalCredit.toLocaleString("en-IN")}</div></div>
+            <div class="box"><div class="label">Payments Received</div><div class="value">${currencySymbol}${totalPayment.toLocaleString("en-IN")}</div></div>
+            <div class="box"><div class="label">Net Outstanding</div><div class="value">${currencySymbol}${netBalance.toLocaleString("en-IN")}</div></div>
+          </div>
+          <table>
+            <thead>
+              <tr><th>Date</th><th>Customer</th><th>Description</th><th>Type</th><th class="amount">Amount</th></tr>
+            </thead>
+            <tbody>${rows || `<tr><td colspan="5">No transactions found for this report.</td></tr>`}</tbody>
+          </table>
+        </body>
+      </html>
+    `);
+    reportWindow.document.close();
+    reportWindow.focus();
+  };
+
+  const handleGenerateReport = async () => {
+    if (reportMode === "single" && !reportDate) {
+      alert("Please select a report date.");
+      return;
+    }
+    if (reportMode === "range" && (!reportStartDate || !reportEndDate)) {
+      alert("Please select both start and end dates.");
+      return;
+    }
+
+    const params = { customerId: id };
+    if (reportMode === "single") {
+      params.startDate = reportDate;
+      params.endDate = reportDate;
+    }
+    if (reportMode === "range") {
+      params.startDate = reportStartDate;
+      params.endDate = reportEndDate;
+    }
+
+    try {
+      setReportLoading(true);
+      const response = await API.get("/transactions", { params });
+      openPrintableReport(response.data);
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to generate transaction report.");
+    } finally {
+      setReportLoading(false);
+    }
+  };
+
   const currencySymbol = settings.currency === "INR" ? "₹" : settings.currency === "USD" ? "$" : settings.currency;
 
   if (custLoading && !currentCustomer) {
@@ -110,6 +236,7 @@ const CustomerDetails = () => {
 
   const owesMoney = currentCustomer.balance > 0;
   const hasSurplus = currentCustomer.balance < 0;
+  const reminderDate = currentCustomer.reminderDate ? formatDisplayDate(currentCustomer.reminderDate) : null;
 
   return (
     <div className="space-y-6 p-4 sm:p-6 lg:p-8">
@@ -160,6 +287,12 @@ const CustomerDetails = () => {
                 <MapPin className="h-4 w-4 text-slate-400 mt-0.5" />
                 <span className="text-slate-700 dark:text-slate-300">{currentCustomer.address}</span>
               </p>
+              {reminderDate && (
+                <p className="flex items-center space-x-2.5">
+                  <CalendarClock className="h-4 w-4 text-slate-400" />
+                  <span className="font-medium text-slate-700 dark:text-slate-300">Reminder: {reminderDate}</span>
+                </p>
+              )}
             </div>
           </div>
 
@@ -216,6 +349,78 @@ const CustomerDetails = () => {
 
         {/* Right Side: Chronological Ledger Entries */}
         <div className="space-y-6 lg:col-span-2">
+          <div className="rounded-3xl border border-slate-200/60 bg-white p-6 shadow-md dark:border-slate-800 dark:bg-slate-950 space-y-4">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-200">
+                  <FileText className="h-4 w-4 text-indigo-500" />
+                  <span>Transaction PDF Report</span>
+                </h3>
+                <p className="text-xs text-slate-400">Create a complete, single-day, or multiple-day report.</p>
+              </div>
+              <button
+                onClick={handleGenerateReport}
+                disabled={reportLoading}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 hover:bg-indigo-500 disabled:bg-indigo-400"
+              >
+                <Printer className="h-4 w-4" />
+                <span>{reportLoading ? "Preparing..." : "Print / Save PDF"}</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Report Type</label>
+                <select
+                  value={reportMode}
+                  onChange={(e) => setReportMode(e.target.value)}
+                  className="w-full rounded-2xl border border-slate-200 bg-white py-2 px-3 text-xs outline-none focus:border-indigo-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 shadow-sm"
+                >
+                  <option value="all">Whole Transaction</option>
+                  <option value="single">Single Day</option>
+                  <option value="range">Multiple Days</option>
+                </select>
+              </div>
+
+              {reportMode === "single" ? (
+                <div className="space-y-1 sm:col-span-2">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Report Date</label>
+                  <input
+                    type="date"
+                    value={reportDate}
+                    onChange={(e) => setReportDate(e.target.value)}
+                    className="w-full rounded-2xl border border-slate-200 bg-white py-2 px-3 text-xs outline-none focus:border-indigo-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 shadow-sm"
+                  />
+                </div>
+              ) : reportMode === "range" ? (
+                <>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Start Date</label>
+                    <input
+                      type="date"
+                      value={reportStartDate}
+                      onChange={(e) => setReportStartDate(e.target.value)}
+                      className="w-full rounded-2xl border border-slate-200 bg-white py-2 px-3 text-xs outline-none focus:border-indigo-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 shadow-sm"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">End Date</label>
+                    <input
+                      type="date"
+                      value={reportEndDate}
+                      onChange={(e) => setReportEndDate(e.target.value)}
+                      className="w-full rounded-2xl border border-slate-200 bg-white py-2 px-3 text-xs outline-none focus:border-indigo-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 shadow-sm"
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-2 text-xs font-medium text-slate-400 dark:border-slate-800 sm:col-span-2">
+                  Includes all transactions for this customer.
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Ledger Filters */}
           <div className="rounded-3xl border border-slate-200/60 bg-white p-6 shadow-md dark:border-slate-800 dark:bg-slate-950 space-y-4">
             <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">

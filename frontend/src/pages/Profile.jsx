@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateProfile, fetchProfile, clearError } from "../store/authSlice.js";
+import { fetchCustomers } from "../store/customerSlice.js";
+import { fetchSettings } from "../store/settingsSlice.js";
+import { ApplicationSettingsForm } from "./Settings.jsx";
 import {
   User,
   Phone,
@@ -11,7 +14,12 @@ import {
   Mail,
   ShieldCheck,
   RotateCcw,
-  Save
+  Save,
+  TrendingUp,
+  TrendingDown,
+  Scale,
+  Eye,
+  EyeOff
 } from "lucide-react";
 
 const getProfileFormData = (user) => ({
@@ -25,14 +33,19 @@ const getProfileFormData = (user) => ({
 const Profile = () => {
   const dispatch = useDispatch();
   const { user, loading, error } = useSelector((state) => state.auth);
+  const { customers } = useSelector((state) => state.customers);
+  const { settings } = useSelector((state) => state.settings);
 
   const [formData, setFormData] = useState(getProfileFormData(user));
 
   const [formError, setFormError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [showOutstandingDetails, setShowOutstandingDetails] = useState(false);
 
   useEffect(() => {
     dispatch(fetchProfile());
+    dispatch(fetchCustomers());
+    dispatch(fetchSettings());
   }, [dispatch]);
 
   useEffect(() => {
@@ -113,6 +126,16 @@ const Profile = () => {
     .join("")
     .toUpperCase();
 
+  const currencySymbol = settings.currency === "INR" ? "â‚¹" : settings.currency === "USD" ? "$" : settings.currency;
+  const outstandingCredit = customers
+    .filter((customer) => Number(customer.balance) > 0)
+    .reduce((sum, customer) => sum + Number(customer.balance), 0);
+  const outstandingDebt = customers
+    .filter((customer) => Number(customer.balance) < 0)
+    .reduce((sum, customer) => sum + Math.abs(Number(customer.balance)), 0);
+  const netOutstanding = outstandingCredit - outstandingDebt;
+  const customersWithBalance = customers.filter((customer) => Number(customer.balance) !== 0);
+
   return (
     <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -129,6 +152,91 @@ const Profile = () => {
           <span>{user?.status || "active"} account</span>
         </div>
       </div>
+
+      <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="rounded-3xl border border-rose-100 bg-white p-5 shadow-md dark:border-rose-950/30 dark:bg-slate-950">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Outstanding Credit</span>
+            <TrendingUp className="h-5 w-5 text-rose-500" />
+          </div>
+          <p className="mt-3 text-2xl font-black text-rose-500">
+            {currencySymbol}{outstandingCredit.toLocaleString("en-IN")}
+          </p>
+          <p className="mt-1 text-xs text-slate-400">Customers owe you</p>
+        </div>
+
+        <div className="rounded-3xl border border-emerald-100 bg-white p-5 shadow-md dark:border-emerald-950/30 dark:bg-slate-950">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Outstanding Debt</span>
+            <TrendingDown className="h-5 w-5 text-emerald-500" />
+          </div>
+          <p className="mt-3 text-2xl font-black text-emerald-500">
+            {currencySymbol}{outstandingDebt.toLocaleString("en-IN")}
+          </p>
+          <p className="mt-1 text-xs text-slate-400">You owe customers</p>
+        </div>
+
+        <div className="rounded-3xl border border-indigo-100 bg-white p-5 shadow-md dark:border-indigo-950/30 dark:bg-slate-950">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Net Outstanding</span>
+            <Scale className="h-5 w-5 text-indigo-500" />
+          </div>
+          <p className={`mt-3 text-2xl font-black ${netOutstanding >= 0 ? "text-indigo-600" : "text-emerald-500"}`}>
+            {currencySymbol}{Math.abs(netOutstanding).toLocaleString("en-IN")}
+          </p>
+          <button
+            type="button"
+            onClick={() => setShowOutstandingDetails((value) => !value)}
+            className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+          >
+            {showOutstandingDetails ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+            <span>{showOutstandingDetails ? "Hide details" : "See details"}</span>
+          </button>
+        </div>
+      </section>
+
+      {showOutstandingDetails && (
+        <section className="rounded-3xl border border-slate-200/60 bg-white p-6 shadow-md dark:border-slate-800 dark:bg-slate-950">
+          <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200">Outstanding Details</h2>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-slate-100 text-xs font-bold uppercase tracking-wider text-slate-400 dark:border-slate-900">
+                  <th className="py-3">Customer</th>
+                  <th className="py-3">Phone</th>
+                  <th className="py-3">Status</th>
+                  <th className="py-3 text-right">Balance</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50 dark:divide-slate-900">
+                {customersWithBalance.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="py-8 text-center text-sm text-slate-400">No outstanding balances.</td>
+                  </tr>
+                ) : (
+                  customersWithBalance.map((customer) => {
+                    const balance = Number(customer.balance);
+                    return (
+                      <tr key={customer._id} className="text-slate-600 dark:text-slate-300">
+                        <td className="py-3 font-semibold">{customer.name}</td>
+                        <td className="py-3 text-xs text-slate-400">{customer.phone}</td>
+                        <td className="py-3">
+                          <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${balance > 0 ? "bg-rose-50 text-rose-600 dark:bg-rose-950/20 dark:text-rose-400" : "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400"}`}>
+                            {balance > 0 ? "Credit" : "Debt"}
+                          </span>
+                        </td>
+                        <td className={`py-3 text-right font-black ${balance > 0 ? "text-rose-500" : "text-emerald-500"}`}>
+                          {currencySymbol}{Math.abs(balance).toLocaleString("en-IN")}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
         <aside className="space-y-4">
@@ -305,6 +413,18 @@ const Profile = () => {
           </form>
         </div>
       </div>
+
+      <section className="space-y-3">
+        <div>
+          <h2 className="text-lg font-extrabold tracking-tight text-slate-800 dark:text-slate-100">
+            Application Settings
+          </h2>
+          <p className="text-sm text-slate-500">
+            Configure currency, due periods, and reminder message templates from your profile.
+          </p>
+        </div>
+        <ApplicationSettingsForm embedded />
+      </section>
     </div>
   );
 };

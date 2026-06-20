@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addCustomer, updateCustomer, clearCustomerError } from "../store/customerSlice.js";
-import { X, User, Phone, MapPin } from "lucide-react";
+import { CalendarDays, X, User, Phone, MapPin } from "lucide-react";
+
+const formatDateInput = (value) => {
+  if (!value) return "";
+  return new Date(value).toISOString().slice(0, 10);
+};
 
 const CustomerModal = ({ isOpen, onClose, customerToEdit }) => {
   const dispatch = useDispatch();
@@ -10,7 +15,8 @@ const CustomerModal = ({ isOpen, onClose, customerToEdit }) => {
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
-    address: ""
+    address: "",
+    reminderDate: ""
   });
 
   const [formError, setFormError] = useState("");
@@ -21,10 +27,11 @@ const CustomerModal = ({ isOpen, onClose, customerToEdit }) => {
       setFormData({
         name: customerToEdit.name || "",
         phone: customerToEdit.phone || "",
-        address: customerToEdit.address || ""
+        address: customerToEdit.address || "",
+        reminderDate: formatDateInput(customerToEdit.reminderDate)
       });
     } else {
-      setFormData({ name: "", phone: "", address: "" });
+      setFormData({ name: "", phone: "", address: "", reminderDate: "" });
     }
     setFormError("");
     dispatch(clearCustomerError());
@@ -134,6 +141,25 @@ const CustomerModal = ({ isOpen, onClose, customerToEdit }) => {
                 className="w-full rounded-xl border border-slate-200 py-3 pr-4 pl-11 text-sm bg-white text-slate-800 outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
               />
             </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              Reminder Date
+            </label>
+            <div className="relative">
+              <CalendarDays className="absolute top-3.5 left-3.5 h-5 w-5 text-slate-400 dark:text-slate-500" />
+              <input
+                type="date"
+                name="reminderDate"
+                value={formData.reminderDate}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-slate-200 py-3 pr-4 pl-11 text-sm bg-white text-slate-800 outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
+              />
+            </div>
+            <p className="text-[10px] font-medium text-slate-400">
+              Used to flag customers for follow-up reminders.
+            </p>
           </div>
 
           {/* Action buttons */}

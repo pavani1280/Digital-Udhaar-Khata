@@ -95,7 +95,7 @@ const Navbar = ({ toggleSidebar }) => {
             </button>
             <Link to="/" className="flex items-center space-x-2">
               <span className="bg-linear-to-r from-indigo-600 to-violet-600 bg-clip-text text-xl font-bold tracking-tight text-transparent dark:from-indigo-400 dark:to-violet-400">
-                Digital Udhaar Khata
+                MyKhata
               </span>
             </Link>
           </div>

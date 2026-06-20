@@ -70,7 +70,7 @@ app.use("/api/settings", settingsRoutes);
 
 // Root endpoint / health check
 app.get("/", (req, res) => {
-  res.send("Digital Udhaar Khata Backend API is running...");
+  res.send("MyKhata Backend API is running...");
 });
 
 app.get("/api/health", (req, res) => {

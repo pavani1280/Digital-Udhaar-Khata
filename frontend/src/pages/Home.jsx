@@ -105,19 +105,6 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200 selection:bg-indigo-500 selection:text-white">
-      {/* Dynamic Scrolling CSS */}
-      <style>{`
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .animate-marquee-custom {
-          display: flex;
-          width: max-content;
-          animation: marquee 30s linear infinite;
-        }
-      `}</style>
-
       {/* Header/Navbar */}
       <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 dark:border-slate-800 dark:bg-slate-950/80 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -125,7 +112,7 @@ const Home = () => {
             {/* Brand Logo */}
             <div className="flex items-center space-x-2">
               <span className="bg-linear-to-r from-indigo-600 to-violet-600 bg-clip-text text-2xl font-black tracking-tight text-transparent dark:from-indigo-400 dark:to-violet-400">
-                Digital Udhaar Khata
+                MyKhata
               </span>
             </div>
 
@@ -345,29 +332,6 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Value Proposition Marquee Section */}
-        <section className="bg-slate-100 dark:bg-slate-950/60 py-5 border-y border-slate-200 dark:border-slate-850 overflow-hidden">
-          <div className="animate-marquee-custom whitespace-nowrap flex items-center gap-16 select-none font-bold uppercase tracking-wider text-xs text-slate-500 dark:text-slate-400">
-            {/* Repeated marquee contents to support seamless loop */}
-            <div className="flex items-center gap-16">
-              <span>• 100% Free & Safe Bookkeeping</span>
-              <span>• Automatic WhatsApp Reminders</span>
-              <span>• Complete Ledger History Logs</span>
-              <span>• Credit Alert Threshold Notifications</span>
-              <span>• Multi-Shop Support</span>
-              <span>• Download PDF Account Statements</span>
-            </div>
-            <div className="flex items-center gap-16">
-              <span>• 100% Free & Safe Bookkeeping</span>
-              <span>• Automatic WhatsApp Reminders</span>
-              <span>• Complete Ledger History Logs</span>
-              <span>• Credit Alert Threshold Notifications</span>
-              <span>• Multi-Shop Support</span>
-              <span>• Download PDF Account Statements</span>
-            </div>
-          </div>
-        </section>
-
         {/* Product Highlights / Features Grid */}
         <section id="features" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24 space-y-24">
           <div className="mx-auto max-w-3xl text-center space-y-4">
@@ -375,7 +339,7 @@ const Home = () => {
               Everything You Need to Manage Shop Credit
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-400">
-              Stop using paper notebooks that get lost or damaged. Digital Udhaar Khata makes credit tracking elegant, fast, and simple.
+              Stop using paper notebooks that get lost or damaged. MyKhata makes credit tracking elegant, fast, and simple.
             </p>
           </div>
 
@@ -680,7 +644,7 @@ const Home = () => {
       <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 py-12 text-slate-500 dark:text-slate-400">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4">
-            <h4 className="text-base font-bold text-slate-800 dark:text-slate-200">Digital Udhaar Khata</h4>
+            <h4 className="text-base font-bold text-slate-800 dark:text-slate-200">MyKhata</h4>
             <p className="text-xs leading-relaxed max-w-xs">
               Simple, premium digital ledger register management system for shopkeepers, wholesalers, and retail merchants.
             </p>
@@ -714,7 +678,7 @@ const Home = () => {
         </div>
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-slate-100 dark:border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-          <p>© 2026 Digital Udhaar Khata. Crafted for modern shop credit ledger bookkeeping.</p>
+          <p>© 2026 MyKhata. Crafted for modern shop credit ledger bookkeeping.</p>
           <div className="flex gap-4">
             <a href="#" className="hover:text-slate-700 dark:hover:text-slate-200">Facebook</a>
             <a href="#" className="hover:text-slate-700 dark:hover:text-slate-200">Twitter</a>

@@ -4,7 +4,7 @@ import Transaction from "../models/Transaction.js";
 // Create a new Customer profile
 export const createCustomer = async (req, res, next) => {
   try {
-    const { name, phone, address } = req.body;
+    const { name, phone, address, reminderDate } = req.body;
     const shopkeeperId = req.user._id;
 
     // Check if customer with same phone exists for this shopkeeper
@@ -18,7 +18,8 @@ export const createCustomer = async (req, res, next) => {
       name,
       phone,
       address,
-      balance: 0
+      balance: 0,
+      reminderDate: reminderDate ? new Date(reminderDate) : null
     });
 
     res.status(201).json(customer);
@@ -80,7 +81,7 @@ export const updateCustomer = async (req, res, next) => {
   try {
     const { id } = req.params;
     const shopkeeperId = req.user._id;
-    const { name, phone, address } = req.body;
+    const { name, phone, address, reminderDate } = req.body;
 
     const customer = await Customer.findOne({ _id: id, shopkeeperId });
     if (!customer) {
@@ -98,6 +99,7 @@ export const updateCustomer = async (req, res, next) => {
     customer.name = name || customer.name;
     customer.phone = phone || customer.phone;
     customer.address = address || customer.address;
+    customer.reminderDate = reminderDate ? new Date(reminderDate) : null;
 
     const updatedCustomer = await customer.save();
     res.json(updatedCustomer);
