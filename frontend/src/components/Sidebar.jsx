@@ -35,14 +35,14 @@ const Sidebar = ({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }) => {
     }`;
 
   const shopkeeperLinks = [
-    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
     { to: "/customers", label: "Customers", icon: Users },
     { to: "/profile", label: "Profile Settings", icon: User },
     { to: "/settings", label: "Application Settings", icon: SettingsIcon }
   ];
 
   const adminLinks = [
-    { to: "/admin", label: "Platform Stats", icon: ShieldCheck },
+    { to: "/admin", label: "Platform Stats", icon: ShieldCheck, end: true },
     { to: "/admin/users", label: "Manage Users", icon: UserCheck }
   ];
 
@@ -111,6 +111,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }) => {
                 <NavLink
                   key={link.to}
                   to={link.to}
+                  end={link.end}
                   onClick={() => isOpen && toggleSidebar()}
                   className={navLinkClass}
                   title={isCollapsed ? link.label : ""}

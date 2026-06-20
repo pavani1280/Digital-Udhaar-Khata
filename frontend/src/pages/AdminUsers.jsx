@@ -8,13 +8,22 @@ const AdminUsers = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+
+  // Debounce search input to avoid hitting the API on every single keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const response = await API.get("/users", {
-        params: { search, status: statusFilter || undefined }
+        params: { search: debouncedSearch, status: statusFilter || undefined }
       });
       setUsers(response.data);
       setError("");
@@ -24,7 +33,7 @@ const AdminUsers = () => {
     } finally {
       setLoading(false);
     }
-  }, [search, statusFilter]);
+  }, [debouncedSearch, statusFilter]);
 
   useEffect(() => {
     fetchUsers();
