@@ -14,6 +14,7 @@ import Register from "./pages/Register.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Customers from "./pages/Customers.jsx";
 import CustomerDetails from "./pages/CustomerDetails.jsx";
+import History from "./pages/History.jsx";
 import Profile from "./pages/Profile.jsx";
 import Settings from "./pages/Settings.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
@@ -95,6 +96,16 @@ function App() {
             <ProtectedRoute allowedRoles={["shopkeeper"]}>
               <DashboardLayout>
                 <CustomerDetails />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/history"
+          element={
+            <ProtectedRoute allowedRoles={["shopkeeper"]}>
+              <DashboardLayout>
+                <History />
               </DashboardLayout>
             </ProtectedRoute>
           }

@@ -19,7 +19,6 @@ import {
   TrendingDown,
   Scale,
   Eye,
-  EyeOff,
   Settings as SettingsIcon
 } from "lucide-react";
 
@@ -42,7 +41,7 @@ const Profile = () => {
   const [formError, setFormError] = useState("");
   const [success, setSuccess] = useState(false);
   const [showOutstandingDetails, setShowOutstandingDetails] = useState(false);
-  const [showProfileDetails, setShowProfileDetails] = useState(true);
+  const [showProfileDetails, setShowProfileDetails] = useState(false);
   const [showApplicationSettings, setShowApplicationSettings] = useState(false);
 
   useEffect(() => {
@@ -183,11 +182,11 @@ const Profile = () => {
           <div className="grid gap-3 sm:grid-cols-2 lg:w-80">
             <button
               type="button"
-              onClick={() => setShowProfileDetails((value) => !value)}
+              onClick={() => setShowProfileDetails(true)}
               className="inline-flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition hover:bg-indigo-500"
             >
-              {showProfileDetails ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              <span>{showProfileDetails ? "Hide Details" : "See Details"}</span>
+              <Eye className="h-4 w-4" />
+              <span>See Details</span>
             </button>
             <button
               type="button"
@@ -234,11 +233,11 @@ const Profile = () => {
           </p>
           <button
             type="button"
-            onClick={() => setShowOutstandingDetails((value) => !value)}
+            onClick={() => setShowOutstandingDetails(true)}
             className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
           >
-            {showOutstandingDetails ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-            <span>{showOutstandingDetails ? "Hide details" : "See details"}</span>
+            <Eye className="h-3.5 w-3.5" />
+            <span>See details</span>
           </button>
         </div>
       </section>

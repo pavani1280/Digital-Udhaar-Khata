@@ -4,6 +4,7 @@ import { logout } from "../store/authSlice.js";
 import {
   LayoutDashboard,
   Users,
+  History,
   User,
   LogOut,
   ShieldCheck,
@@ -36,6 +37,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }) => {
   const shopkeeperLinks = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
     { to: "/customers", label: "Customers", icon: Users },
+    { to: "/history", label: "History Records", icon: History },
     { to: "/profile", label: "Profile Settings", icon: User }
   ];
 
